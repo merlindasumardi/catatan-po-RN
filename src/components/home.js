@@ -1,119 +1,112 @@
-import React, { Component } from 'react';
-import { Image, ScrollView, View, Dimensions } from 'react-native';
-import { Container, Card, CardItem, Body, Text, Header, Right, Button, Icon, Title, Item, Input} from 'native-base';
+import React, { Component } from "react";
+import {
+    Image, View, Dimensions, ScrollView,
+    Text
+} from "react-native";
+import {
+    Card, CardItem,
+    Item, Input
+} from 'native-base';
 
-const { height } = Dimensions.get('window');
+import DetailProduct from "./detailProduct";
+
+const { height } = Dimensions.get("window");
 
 class Home extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            screenHeight: 0,
-        }
-    }
-    contentSizeChange = (contentWidth, contentHeight) => {
-        this.setState({
-            screenHeight: contentHeight,
-        });
-    }
-    render() {
-        const scrollEnabled = this.state.screenHeight > height;
-        console.log(this.props)
-        return(
-        <Container>
-        <Header>
-          <Body>
-            <Title>Home</Title>
-          </Body>
-          <Right>
-          <Button transparent onPress={() => this.props.navigation.navigate('AddProduct')}>
-            <Icon name="add" />
-          </Button>
-          </Right>
-        </Header>
-        <Item rounded style={{ marginBottom:0, marginTop: 10, marginLeft: 10, marginRight: 10}}>
-            <Input placeholder="Search"/>
-        </Item>
-        <ScrollView
-        contentContainerStyle={styles.container}
-        scrollEnabled={scrollEnabled}
-        onContentSizeChange={this.contentSizeChange}
-        > 
-          <View style={{width: '50%'}}>
-          <Card>
-                    <CardItem cardBody>
-                        <Image source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}} style={{height: 200, width: null, flex: 1}}/>
-                    </CardItem>
-                    <CardItem footer>
-                        <Text>Hello</Text>
-                    </CardItem>
-                </Card>
-          </View>
-          <View style={{width: '50%'}}>
-          <Card>
-                    <CardItem cardBody>
-                        <Image source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}} style={{height: 200, width: null, flex: 1}}/>
-                    </CardItem>
-                    <CardItem footer>
-                        <Text>Hello</Text>
-                    </CardItem>
-                </Card>
-          </View>
-          <View style={{width: '50%'}}>
-          <Card>
-                    <CardItem cardBody>
-                        <Image source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}} style={{height: 200, width: null, flex: 1}}/>
-                    </CardItem>
-                    <CardItem footer>
-                        <Text>Hello</Text>
-                    </CardItem>
-                </Card>
-          </View>
-          <View style={{width: '50%'}}>
-          <Card>
-                    <CardItem cardBody>
-                        <Image source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}} style={{height: 200, width: null, flex: 1}}/>
-                    </CardItem>
-                    <CardItem footer>
-                        <Text>Hello</Text>
-                    </CardItem>
-                </Card>
-          </View>
-          <View style={{width: '50%'}}>
-          <Card>
-                    <CardItem cardBody>
-                        <Image source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}} style={{height: 200, width: null, flex: 1}}/>
-                    </CardItem>
-                    <CardItem footer>
-                        <Text>Hello</Text>
-                    </CardItem>
-                </Card>
-          </View>
-          <View style={{width: '50%'}}>
-          <Card>
-                    <CardItem cardBody>
-                        <Image source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}} style={{height: 200, width: null, flex: 1}}/>
-                    </CardItem>
-                    <CardItem footer>
-                        <Text>Hello</Text>
-                    </CardItem>
-                </Card>
-          </View>
-        </ScrollView>
-      </Container>
-        )
-    }
+    this.state = {
+      screenHeight: 0,
+      showModal: false,
+      fake: [1, 2, 3, 4, 5, 6]
+    };
+  }
+  contentSizeChange = (contentWidth, contentHeight) => {
+    this.setState({
+      screenHeight: contentHeight
+    });
+  };
+
+  handleOpenModal() {
+    this.setState({
+      showModal: true
+    });
+  }
+
+  async goToEdit() {
+    await this.setState({
+      showModal: false
+    });
+
+    this.props.navigation.navigate('DetailProduct', {
+        productId: 1 //TODO: change with real id from props 
+      });
+  }
+
+  render() {
+    const scrollEnabled = this.state.screenHeight > height;
+    console.log(this.props.navigation);
+    return (
+        <View>
+            <Item
+                rounded
+                style={{
+                    marginBottom: 0,
+                    marginTop: 10,
+                    marginLeft: 10,
+                    marginRight: 10
+                }}
+            >
+                <Input placeholder="Search" />
+            </Item>
+        
+            <ScrollView>
+                <View style={styles.container}>
+                { 
+                    this.state.fake.map(() => {
+                        return (
+                            <View style={styles.containerItem}>
+                                <Card>
+                                    <CardItem cardBody button onPress={() => this.handleOpenModal()}>
+                                        <Image
+                                        source={{
+                                            uri:
+                                            "https://facebook.github.io/react-native/docs/assets/favicon.png"
+                                        }}
+                                        style={{ height: 200, width: null, flex: 1 }}
+                                        />
+                                    </CardItem>
+                                    <CardItem footer>
+                                        <Text>Hello</Text>
+                                    </CardItem>
+                                </Card>
+                            </View>
+                        );
+                    })
+                }
+                </View>
+            </ScrollView>
+            <DetailProduct
+                showModal={this.state.showModal}
+                goToEdit={() => this.goToEdit()}
+            />
+        </View>
+    );
+  }
 }
 
 const styles = {
-    container: {
-      flex: 1,
-      flexDirection: 'column',
-      flexWrap: 'wrap',
-      alignContent: 'stretch', 
-      justifyContent: 'space-around'
-    },
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: 'space-around',
+    flexWrap: "wrap",
+    alignItems: "stretch"
+  },
+  containerItem: {
+    width: '50%'
   }
+};
 
 export default Home;

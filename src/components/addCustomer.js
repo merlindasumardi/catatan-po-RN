@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
   Container,
-  Header,
   Content,
   Input,
   Item,
@@ -12,7 +11,10 @@ import {
   Text,
   Grid,
   Row,
-  View
+  View,
+  ListItem,
+  CheckBox,
+  Body,
 } from "native-base";
 
 class AddProduct extends Component {
@@ -24,31 +26,28 @@ class AddProduct extends Component {
       <Container>
         <Content>
           <Item regular style={styles.inputStyles}>
-            <Input placeholder="Product Name" />
+            <Input placeholder="Customer Name" />
           </Item>
           <Item regular style={styles.inputStyles}>
-            <Input placeholder="Harga(Yen)" />
+            <Input placeholder="Phone Number" />
           </Item>
+          <ListItem>
+            <CheckBox checked={true} />
+            <Body>
+              <Text>Whatsapp</Text>
+            </Body>
+          </ListItem>
+          <ListItem>
+            <CheckBox checked={false} />
+            <Body>
+              <Text>Line</Text>
+            </Body>
+          </ListItem>
           <Item regular style={styles.inputStyles}>
-            <Input placeholder="Rate" />
-          </Item>
-          <Item regular style={styles.inputStyles}>
-            <Input placeholder="Harga(Rp)" />
-          </Item>
-          <Item regular style={styles.inputStyles}>
-            <Input placeholder="Jastip(Rp)" />
-          </Item>
-          <Item regular style={styles.inputStyles}>
-            <Input placeholder="Untung" />
-          </Item>
-          <Item regular style={styles.inputStyles}>
-            <Input placeholder="Harga Jual" />
+            <Input placeholder="LineID" />
           </Item>
           <Form style={styles.inputStyles}>
-            <Textarea rowSpan={5} bordered placeholder="Beli Dimana" />
-          </Form>
-          <Form style={styles.inputStyles}>
-            <Textarea rowSpan={5} bordered placeholder="Notes" />
+            <Textarea rowSpan={5} bordered placeholder="Address" />
           </Form>
           <View style={styles.buttonStyles}>
             <Button iconLeft danger onPress={() => this.backToHome()}>
