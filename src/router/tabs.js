@@ -11,6 +11,8 @@ import Customers from "../components/customers";
 import Orders from "../components/orders";
 import AddProduct from "../components/addProduct";
 import AddCustomer from '../components/addCustomer'; 
+import AddOrder from '../components/addOrder';
+import ChooseProduct from '../components/chooseProduct';
 
 const HomeStack = createStackNavigator({
   Home: {
@@ -56,13 +58,35 @@ const CustomerStack = createStackNavigator({
       headerTitle: "Add Customer"
     })
   },
+  OrderDetails: {
+    screen: Orders,
+    navigationOptions: ({navigation}) => ({
+      headerTitle: "Order Details",
+      headerRight: (
+        <Button transparent onPress={() => navigation.push("ChooseProduct")}>
+          <Icon name="add" />
+        </Button>
+      )
+    })
+  },
+  ChooseProduct: {
+    screen: ChooseProduct,
+    navigationOptions: () => ({
+      headerTitle: "Choose Product",
+    }),
+  },
+  AddOrder: {
+    screen: AddOrder,
+    navigationOptions: () => ({
+      headerTitle: "Add Order",
+    })
+  },
 })
 
 const Tabs = createBottomTabNavigator(
   {
     Home: HomeStack,
     Customers: CustomerStack,
-    Orders
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -77,8 +101,6 @@ const Tabs = createBottomTabNavigator(
           //   IconComponent = HomeIconWithBadge;
         } else if (routeName === "Customers") {
           iconName = "ios-person";
-        } else if (routeName === "Orders") {
-          iconName = "ios-cart";
         }
 
         // You can return any component that you like here!

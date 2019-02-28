@@ -1,29 +1,39 @@
-import React, { Component } from "react";
-import { Text } from "react-native";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
-  Content,
-  List,
-  ListItem,
-  Left,
-  Body,
-  Thumbnail,
-  Right
-} from "native-base";
+    Content,
+    List,
+    ListItem,
+    Left,
+    Body,
+    Thumbnail,
+    Right,
+    Item,
+    Input,
+    Text
+  } from "native-base";
+  
 
-class Orders extends Component {
-  render() {
-    return (
-      <Content>
+class ChooseProduct extends Component {
+    goToOrder() {
+        this.props.navigation.push('AddOrder');
+    }
+    render() {
+        return(
+            <Content>
+            <Item
+          rounded
+          style={{
+            marginBottom: 0,
+            marginTop: 10,
+            marginLeft: 10,
+            marginRight: 10
+          }}
+        >
+          <Input placeholder="Search" />
+        </Item>
         <List>
-          <ListItem itemHeader first>
-            <Left>
-              <Text>Merlinda</Text>
-            </Left>
-            <Right>
-              <Text>Total Price: 1.000.000</Text>
-            </Right>
-          </ListItem>
-          <ListItem thumbnail>
+          <ListItem thumbnail onPress={() => this.goToOrder()}>
             <Left>
               <Thumbnail
                 square
@@ -35,14 +45,9 @@ class Orders extends Component {
             </Left>
             <Body>
               <Text>SENKA PERFECT WHIP COLLAGEN</Text>
-              <Text>TotalOrde: 3</Text>
-              <Text>Price: 300.000</Text>
-              <Text note numberOfLines={1}>
-                Its time to build a difference . .
-              </Text>
             </Body>
           </ListItem>
-          <ListItem thumbnail>
+          <ListItem thumbnail onPress={() => this.goToOrder()}>
             <Left>
               <Thumbnail
                 square
@@ -54,14 +59,9 @@ class Orders extends Component {
             </Left>
             <Body>
               <Text>SENKA PERFECT WHIP COLLAGEN</Text>
-              <Text>TotalOrde: 3</Text>
-              <Text>Price: 300.000</Text>
-              <Text note numberOfLines={1}>
-                Its time to build a difference . .
-              </Text>
             </Body>
           </ListItem>
-          <ListItem thumbnail>
+          <ListItem thumbnail onPress={() => this.goToOrder()}>
             <Left>
               <Thumbnail
                 square
@@ -73,14 +73,9 @@ class Orders extends Component {
             </Left>
             <Body>
               <Text>SENKA PERFECT WHIP COLLAGEN</Text>
-              <Text>TotalOrde: 3</Text>
-              <Text>Price: 300.000</Text>
-              <Text note numberOfLines={1}>
-                Its time to build a difference . .
-              </Text>
             </Body>
           </ListItem>
-          <ListItem thumbnail>
+          <ListItem thumbnail onPress={() => this.goToOrder()}>
             <Left>
               <Thumbnail
                 square
@@ -92,14 +87,9 @@ class Orders extends Component {
             </Left>
             <Body>
               <Text>SENKA PERFECT WHIP COLLAGEN</Text>
-              <Text>TotalOrde: 3</Text>
-              <Text>Price: 300.000</Text>
-              <Text note numberOfLines={1}>
-                Its time to build a difference . .
-              </Text>
             </Body>
           </ListItem>
-          <ListItem thumbnail>
+          <ListItem thumbnail onPress={() => this.goToOrder()}>
             <Left>
               <Thumbnail
                 square
@@ -111,14 +101,9 @@ class Orders extends Component {
             </Left>
             <Body>
               <Text>SENKA PERFECT WHIP COLLAGEN</Text>
-              <Text>TotalOrde: 3</Text>
-              <Text>Price: 300.000</Text>
-              <Text note numberOfLines={1}>
-                Its time to build a difference . .
-              </Text>
             </Body>
           </ListItem>
-          <ListItem thumbnail>
+          <ListItem thumbnail onPress={() => this.goToOrder()}>
             <Left>
               <Thumbnail
                 square
@@ -130,17 +115,13 @@ class Orders extends Component {
             </Left>
             <Body>
               <Text>SENKA PERFECT WHIP COLLAGEN</Text>
-              <Text>TotalOrde: 3</Text>
-              <Text>Price: 300.000</Text>
-              <Text note numberOfLines={1}>
-                Its time to build a difference . .
-              </Text>
             </Body>
           </ListItem>
+          
         </List>
       </Content>
-    );
-  }
+        );
+    }
 }
 
-export default Orders;
+export default ChooseProduct;

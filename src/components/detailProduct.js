@@ -53,7 +53,7 @@ class DetailProduct extends Component {
             </CardItem>
             <CardItem>
               <Body>
-                <Text>Product Name: Tes 123</Text>
+                <Text>Product Name:</Text><Text>Tes 123</Text>
                 <Text>Price(Yen): 1000 yen</Text>
                 <Text>Price (Rp): Rp 128.000</Text>
                 <Text>Jastip (Rp): Rp 20.000</Text>

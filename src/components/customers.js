@@ -21,6 +21,12 @@ class Customers extends Component {
     });
    }
 
+   goToOrder() {
+    this.props.navigation.navigate('OrderDetails', {
+        customerId: 1,
+    });  
+   }
+
   render() {
     return (
       <Content>
@@ -39,7 +45,7 @@ class Customers extends Component {
           leftOpenValue={75}
           rightOpenValue={-75}
           left={
-            <Button onPress={() => alert("Add")}>
+            <Button onPress={() => this.goToOrder() }>
               <Icon active name="information-circle" />
             </Button>
           }

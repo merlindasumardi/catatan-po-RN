@@ -7,8 +7,11 @@ import {
     Card, CardItem,
     Item, Input
 } from 'native-base';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import DetailProduct from "./detailProduct";
+import { getAllProducts } from "../actions/productActions";
 
 const { height } = Dimensions.get("window");
 
@@ -22,11 +25,11 @@ class Home extends Component {
       fake: [1, 2, 3, 4, 5, 6]
     };
   }
-  contentSizeChange = (contentWidth, contentHeight) => {
-    this.setState({
-      screenHeight: contentHeight
-    });
-  };
+
+  async componentDidMount() {
+    await this.props.getAllProducts();
+    console.log(this.props);
+  }
 
   handleOpenModal() {
     this.setState({
@@ -109,4 +112,12 @@ const styles = {
   }
 };
 
-export default Home;
+const mapStateToProps = state => ({
+  products: state.products.products,
+});
+
+const mapDispatchToProps = dispatch => ({
+  getAllProducts: bindActionCreators(getAllProducts, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
