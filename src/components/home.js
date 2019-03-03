@@ -1,14 +1,9 @@
+import _ from "lodash";
 import React, { Component } from "react";
-import {
-    Image, View, Dimensions, ScrollView,
-    Text
-} from "react-native";
-import {
-    Card, CardItem,
-    Item, Input
-} from 'native-base';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { Image, View, Dimensions, ScrollView, Text } from "react-native";
+import { Card, CardItem, Item, Input, Left, Right } from "native-base";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 import DetailProduct from "./detailProduct";
 import { getAllProducts } from "../actions/productActions";
@@ -22,13 +17,18 @@ class Home extends Component {
     this.state = {
       screenHeight: 0,
       showModal: false,
-      fake: [1, 2, 3, 4, 5, 6]
+      products: []
     };
   }
 
-  async componentDidMount() {
-    await this.props.getAllProducts();
-    console.log(this.props);
+  componentDidMount() {
+    this.props.getAllProducts();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      products: nextProps.products
+    });
   }
 
   handleOpenModal() {
@@ -42,59 +42,65 @@ class Home extends Component {
       showModal: false
     });
 
-    this.props.navigation.navigate('DetailProduct', {
-        productId: 1 //TODO: change with real id from props 
-      });
+    this.props.navigation.navigate("DetailProduct", {
+      productId: 1 //TODO: change with real id from props
+    });
   }
 
   render() {
     const scrollEnabled = this.state.screenHeight > height;
-    console.log(this.props.navigation);
+
     return (
-        <View>
-            <Item
-                rounded
-                style={{
-                    marginBottom: 0,
-                    marginTop: 10,
-                    marginLeft: 10,
-                    marginRight: 10
-                }}
-            >
-                <Input placeholder="Search" />
-            </Item>
-        
-            <ScrollView>
-                <View style={styles.container}>
-                { 
-                    this.state.fake.map(() => {
-                        return (
-                            <View style={styles.containerItem}>
-                                <Card>
-                                    <CardItem cardBody button onPress={() => this.handleOpenModal()}>
-                                        <Image
-                                        source={{
-                                            uri:
-                                            "https://facebook.github.io/react-native/docs/assets/favicon.png"
-                                        }}
-                                        style={{ height: 200, width: null, flex: 1 }}
-                                        />
-                                    </CardItem>
-                                    <CardItem footer>
-                                        <Text>Hello</Text>
-                                    </CardItem>
-                                </Card>
-                            </View>
-                        );
-                    })
-                }
+      <View>
+        <Item
+          rounded
+          style={{
+            marginBottom: 0,
+            marginTop: 10,
+            marginLeft: 10,
+            marginRight: 10
+          }}
+        >
+          <Input placeholder="Search" />
+        </Item>
+
+        <ScrollView>
+          <View style={styles.container}>
+            {_.map(this.props.products, (value, i) => {
+              return (
+                <View style={styles.containerItem} key={i}>
+                  <Card>
+                    <CardItem
+                      cardBody
+                      button
+                      onPress={() => this.handleOpenModal()}
+                    >
+                      <Image
+                        source={{
+                          uri: value.image
+                        }}
+                        style={{ height: 200, width: null, flex: 1 }}
+                      />
+                    </CardItem>
+                    <CardItem footer>
+                    <Left>
+                      <Text>{value.productName}</Text>
+                    </Left>
+                    <Right>
+                    <Text>{value.sellingPrice}</Text>
+                    </Right>
+                    </CardItem>
+                  </Card>
                 </View>
-            </ScrollView>
-            <DetailProduct
-                showModal={this.state.showModal}
-                goToEdit={() => this.goToEdit()}
-            />
-        </View>
+              );
+            })}
+          </View>
+        </ScrollView>
+        <DetailProduct
+          showModal={this.state.showModal}
+          goToEdit={() => this.goToEdit()}
+        />
+      </View>
     );
   }
 }
@@ -103,21 +109,24 @@ const styles = {
   container: {
     flex: 1,
     flexDirection: "row",
-    justifyContent: 'space-around',
+    justifyContent: "space-around",
     flexWrap: "wrap",
     alignItems: "stretch"
   },
   containerItem: {
-    width: '50%'
+    width: "50%"
   }
 };
 
 const mapStateToProps = state => ({
-  products: state.products.products,
+  products: state.products.products.values
 });
 
 const mapDispatchToProps = dispatch => ({
-  getAllProducts: bindActionCreators(getAllProducts, dispatch),
+  getAllProducts: bindActionCreators(getAllProducts, dispatch)
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Home);
