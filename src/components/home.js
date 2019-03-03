@@ -1,11 +1,16 @@
 import _ from "lodash";
 import React, { Component } from "react";
-import { Image, View, Dimensions, ScrollView, Text } from "react-native";
+import {
+    Image, View, Dimensions,
+    ScrollView, Text,
+    RefreshControl
+} from "react-native";
 import { Card, CardItem, Item, Input, Left, Right } from "native-base";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import DetailProduct from "./detailProduct";
+import Loading from './loading';
 import { getAllProducts } from "../actions/productActions";
 
 const { height } = Dimensions.get("window");
@@ -17,12 +22,17 @@ class Home extends Component {
     this.state = {
       screenHeight: 0,
       showModal: false,
-      products: []
+      products: [],
+      refreshing: false,
+      loading: true
     };
   }
 
   componentDidMount() {
-    this.props.getAllProducts();
+    this.props.getAllProducts()
+        .then(() => {
+            this.setState({ loading: false });
+        });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -47,6 +57,15 @@ class Home extends Component {
     });
   }
 
+  // - onRefresh
+  _onRefresh = () => {
+      this.setState({ refreshing: true });
+      this.props.getAllProducts()
+        .then(() => {
+            this.setState({ refreshing: false });
+        });
+  }
+
   render() {
     const scrollEnabled = this.state.screenHeight > height;
 
@@ -64,42 +83,55 @@ class Home extends Component {
           <Input placeholder="Search" />
         </Item>
 
-        <ScrollView>
-          <View style={styles.container}>
-            {_.map(this.props.products, (value, i) => {
-              return (
-                <View style={styles.containerItem} key={i}>
-                  <Card>
-                    <CardItem
-                      cardBody
-                      button
-                      onPress={() => this.handleOpenModal()}
-                    >
-                      <Image
-                        source={{
-                          uri: value.image
-                        }}
-                        style={{ height: 200, width: null, flex: 1 }}
-                      />
-                    </CardItem>
-                    <CardItem footer>
-                    <Left>
-                      <Text>{value.productName}</Text>
-                    </Left>
-                    <Right>
-                    <Text>{value.sellingPrice}</Text>
-                    </Right>
-                    </CardItem>
-                  </Card>
+          {
+            this.state.loading ? <Loading />
+            :
+            <View>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                        />
+                    }
+                >
+                <View style={styles.container}>
+                    {_.map(this.props.products, (value, i) => {
+                    return (
+                        <View style={styles.containerItem} key={i}>
+                        <Card>
+                            <CardItem
+                            cardBody
+                            button
+                            onPress={() => this.handleOpenModal()}
+                            >
+                            <Image
+                                source={{
+                                uri: value.image
+                                }}
+                                style={{ height: 200, width: null, flex: 1 }}
+                            />
+                            </CardItem>
+                            <CardItem footer>
+                            <Left>
+                            <Text>{value.productName}</Text>
+                            </Left>
+                            <Right>
+                            <Text>{value.sellingPrice}</Text>
+                            </Right>
+                            </CardItem>
+                        </Card>
+                        </View>
+                    );
+                    })}
                 </View>
-              );
-            })}
-          </View>
-        </ScrollView>
-        <DetailProduct
-          showModal={this.state.showModal}
-          goToEdit={() => this.goToEdit()}
-        />
+                </ScrollView>
+                <DetailProduct
+                showModal={this.state.showModal}
+                goToEdit={() => this.goToEdit()}
+                />
+            </View>
+        }
       </View>
     );
   }
