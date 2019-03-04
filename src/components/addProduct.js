@@ -26,27 +26,48 @@ class AddProduct extends Component {
       categories: [],
       categoryId: 1,
       productName: "",
-      originalPrice: '',
+      originalPrice: "",
       rate: 135,
-      priceAfterConversion: '',
-      preOrderFee: '',
-      sellingPrice: '',
-      profit: '',
+      priceAfterConversion: "",
+      preOrderFee: "",
+      sellingPrice: "",
+      profit: "",
       whereToBuy: "",
       notes: "",
-      image: "",
+      image: ""
     };
   }
 
   async componentDidMount() {
-    const productId = this.props.navigation.getParam('productId');
-    await this.props.getAllCategories();
-    this.props.getProductById(productId);
+    const productId = this.props.navigation.getParam("productId");
+    const categoryResult = await this.props.getAllCategories();
+    console.log(categoryResult);
+    this.setState({
+      categories: categoryResult.data.values
+    });
+
+    if (productId !== undefined) {
+      this.props.getProductById(productId);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      categories: nextProps.categories
+      categoryId: _.get(nextProps.productDetail, "category", 1),
+      productName: _.get(nextProps.productDetail, "productName", ""),
+      originalPrice: _.get(nextProps.productDetail, "originalPrice", ""),
+      rate: _.get(nextProps.productDetail, "rate", 135),
+      priceAfterConversion: _.get(
+        nextProps.productDetail,
+        "priceAfterConversion",
+        ""
+      ),
+      preOrderFee: _.get(nextProps.productDetail, "preOrderFee", ""),
+      sellingPrice: _.get(nextProps.productDetail, "sellingPrice", ""),
+      profit: _.get(nextProps.productDetail, "profit", ""),
+      whereToBuy: _.get(nextProps.productDetail, "whereToBuy", ""),
+      notes: _.get(nextProps.productDetail, "notes", ""),
+      image: _.get(nextProps.productDetail, "image", "")
     });
   }
 
@@ -65,49 +86,52 @@ class AddProduct extends Component {
     this.getJastipPrice(this.state.preOrderFee);
   }
 
-  async getSellingPrice(text){
+  async getSellingPrice(text) {
     const hargaJual = Number(this.state.priceAfterConversion) + Number(text);
 
     await this.setState({
       preOrderFee: Number(text),
-      sellingPrice: hargaJual,
-
+      sellingPrice: hargaJual
     });
 
     this.getUntung();
   }
 
-  async getJastipPrice(text){
+  async getJastipPrice(text) {
     const jastip = Number(text) - Number(this.state.priceAfterConversion);
 
     await this.setState({
       preOrderFee: jastip,
-      sellingPrice: text,
+      sellingPrice: text
     });
 
     this.getUntung();
   }
 
-  getUntung(){
-    const untung = Number(this.state.priceAfterConversion)-(Number(this.state.originalPrice) * 126.28) + Number(this.state.preOrderFee);
+  getUntung() {
+    const untung =
+      Number(this.state.priceAfterConversion) -
+      Number(this.state.originalPrice) * 126.28 +
+      Number(this.state.preOrderFee);
 
     this.setState({
-      profit: untung,
-    })
+      profit: untung
+    });
   }
 
-  async handleSubmitProduct(){
-    // const productData = this.state;
-    // delete productData.categories;
+  async handleSubmitProduct() {
+    const productData = this.state;
+    delete productData.categories;
 
-    // const result = await this.props.addProduct(productData);
+    const result = await this.props.addProduct(productData);
 
-    // if(result.status === 200){
-      this.props.navigation.navigate('Home');
-    // }
+    if (result.status === 200) {
+      this.props.navigation.navigate("Home");
+    }
   }
 
   render() {
+    console.log(this.state);
     return (
       <Container>
         <Content>
@@ -136,8 +160,9 @@ class AddProduct extends Component {
             </Item>
           </Form>
           <Item regular style={styles.inputStyles} stackedLabel>
-          <Label>Product Name</Label>
+            <Label>Product Name</Label>
             <Input
+              value={this.state.productName}
               onChangeText={text => {
                 this.setState({
                   productName: text
@@ -146,13 +171,14 @@ class AddProduct extends Component {
             />
           </Item>
           <Item regular style={styles.inputStyles} stackedLabel>
-              <Label>Harga(Yen)</Label>
+            <Label>Harga(Yen)</Label>
             <Input
-            type="number"
+              type="number"
               onChangeText={text => {
                 this.convertPrice(text);
               }}
               keyboardType="numeric"
+              value={this.state.originalPrice.toString()}
             />
           </Item>
           {/* <Item regular style={styles.inputStyles}>
@@ -168,7 +194,7 @@ class AddProduct extends Component {
           <Item regular style={styles.inputStyles} stackedLabel>
             <Label>Harga(Rp)</Label>
             <Input
-            type="number"
+              type="number"
               disabled
               value={this.state.priceAfterConversion.toString()}
             />
@@ -180,32 +206,30 @@ class AddProduct extends Component {
                 this.getSellingPrice(text);
               }}
               value={this.state.preOrderFee.toString()}
-              keyboardType='numeric'              
+              keyboardType="numeric"
             />
           </Item>
           <Item regular style={styles.inputStyles} stackedLabel>
-              <Label>Harga Jual</Label>
+            <Label>Harga Jual</Label>
             <Input
               onChangeText={text => {
                 this.getJastipPrice(text);
               }}
-              keyboardType='numeric'
+              keyboardType="numeric"
               value={this.state.sellingPrice.toString()}
             />
           </Item>
           <Item regular style={styles.inputStyles} stackedLabel>
-              <Label>Untung</Label>
-            <Input
-             disabled
-             value={this.state.profit.toString()}
-            />
+            <Label>Untung</Label>
+            <Input disabled value={this.state.profit.toString()} />
           </Item>
           <Item regular style={styles.inputStyles} stackedLabel>
-              <Label>Image URL</Label>
+            <Label>Image URL</Label>
             <Input
+              value={this.state.image}
               onChangeText={text => {
                 this.setState({
-                  image: text,
+                  image: text
                 });
               }}
             />
@@ -215,6 +239,7 @@ class AddProduct extends Component {
               rowSpan={5}
               bordered
               placeholder="Beli Dimana"
+              value={this.state.whereToBuy}
               onChangeText={text => {
                 this.setState({
                   whereToBuy: text
@@ -224,12 +249,13 @@ class AddProduct extends Component {
           </Form>
           <Form style={styles.inputStyles}>
             <Textarea
+              value={this.state.notes}
               rowSpan={5}
               bordered
               placeholder="Notes"
               onChangeText={text => {
                 this.setState({
-                  notes: text,
+                  notes: text
                 });
               }}
             />
@@ -267,14 +293,13 @@ const styles = {
 
 const mapStateToProps = state => ({
   categories: state.categories.categories.values,
-  productDetail: state.products.productDetail,
+  productDetail: state.products.productDetail.values
 });
 
 const mapDispatchToProps = dispatch => ({
   getAllCategories: bindActionCreators(getCategories, dispatch),
   addProduct: bindActionCreators(addProduct, dispatch),
   getProductById: bindActionCreators(getProductById, dispatch)
-
 });
 
 export default connect(
