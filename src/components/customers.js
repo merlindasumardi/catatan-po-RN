@@ -13,17 +13,31 @@ import {
   SwipeRow,
   View
 } from "native-base";
+// - reducer
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { getAllCustomers } from '../actions/customerActions';
+import _ from 'lodash';
 
 class Customers extends Component {
-   goToEdit() {
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+        // - fetch customers information
+        this.props.getAllCustomers();
+    }
+
+   goToEdit(value) {
     this.props.navigation.navigate('AddCustomer', {
-        customerId: 1,
+        customerId: value.id,
     });
    }
 
-   goToOrder() {
+   goToOrder(value) {
     this.props.navigation.navigate('OrderDetails', {
-        customerId: 1,
+        customerId: value.id,
     });  
    }
 
@@ -41,39 +55,57 @@ class Customers extends Component {
         >
           <Input placeholder="Search" />
         </Item>
-        <SwipeRow
-          leftOpenValue={75}
-          rightOpenValue={-75}
-          left={
-            <Button onPress={() => this.goToOrder() }>
-              <Icon active name="information-circle" />
-            </Button>
-          }
-          body={
-            <View style={{ marginLeft: 20 }}>
-              <Text>Merlinda - 082114529397</Text>
-              <Text>Alamat: adfsadfadfafadfafasdfsaf</Text>
-              <Text>Jumlah barang: 3</Text>
-              <Text>Total Belanja: Rp 2.000.000</Text>
-              <Text>DP: Rp 1.000.000</Text>
-              <Text>Lunas: Belum</Text>
-            </View>
-          }
-          right={
-              <>
-            <Button warning onPress={() => this.goToEdit()}>
-              <Icon active name="create" />
-            </Button>
-            <Button danger onPress={() => alert("Trash")}>
-              <Icon active name="trash" />
-            </Button>
-            </>
-          }
-        />
+        {
+            _.map(this.props.customers, (value, i) => {
+                return (
+                    <SwipeRow
+                        key={i}
+                        leftOpenValue={75}
+                        rightOpenValue={-75}
+                        left={
+                            <Button onPress={() => this.goToOrder(value) }>
+                            <Icon active name="information-circle" />
+                            </Button>
+                        }
+                        body={
+                            <View style={{ marginLeft: 20 }}>
+                            <Text>{value.customerName} - {value.phoneNumber}</Text>
+                            <Text>Alamat: {value.address}</Text>
+                            <Text>Jumlah barang: 3</Text>
+                            <Text>Total Belanja: Rp 2.000.000</Text>
+                            <Text>DP: Rp 1.000.000</Text>
+                            <Text>Lunas: Belum</Text>
+                            </View>
+                        }
+                        right={
+                            <>
+                            <Button warning onPress={() => this.goToEdit(value)}>
+                            <Icon active name="create" />
+                            </Button>
+                            <Button danger onPress={() => alert("Trash")}>
+                            <Icon active name="trash" />
+                            </Button>
+                            </>
+                        }
+                        />
+                );
+            })
+        }
 
       </Content>
     );
   }
 }
 
-export default Customers;
+const mapStateToProps = state => ({
+    customers: state.customers.customers.values
+});
+
+const mapDispatchToProps = dispatch => ({
+    getAllCustomers: bindActionCreators(getAllCustomers, dispatch)
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Customers);

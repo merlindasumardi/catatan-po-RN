@@ -6,7 +6,7 @@ initialState = {
 
 export default (CategoryReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "GET__REQUEST":
+    case "GET_CATEGORY_REQUEST":
       return { ...state, isFetching: true, isFetchingFailed: false };
     case "GET_CATEGORY_SUCCESS":
       return {

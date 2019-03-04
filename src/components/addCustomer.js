@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Alert } from 'react-native';
+import _ from 'lodash';
 import {
   Container,
   Content,
@@ -14,22 +16,58 @@ import {
   View,
   ListItem,
   CheckBox,
-  Body,
+  Body
 } from "native-base";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { addCustomer } from '../actions';
 
-class AddProduct extends Component {
+class AddCustomer extends Component {
+    constructor (props) {
+        super(props);
+        this.state = {
+            customerName: '',
+            phoneNumber: '',
+            lineId: '',
+            address: '',
+            isActive: 'yes'
+        };
+    }
+
     backToHome() {
         this.props.navigation.pop();
+    }
+
+    async _handleSubmit() {
+        const customerData = this.state;
+        const result = await this.props.addCustomer(customerData);
+        if (_.isEqual(result.status, 200)) {
+            this.props.navigation.navigate('Customer');
+        }
     }
   render() {
     return (
       <Container>
         <Content>
           <Item regular style={styles.inputStyles}>
-            <Input placeholder="Customer Name" />
+            <Input
+                placeholder="Customer Name"
+                onChangeText={text => {
+                    this.setState({
+                         customerName: text
+                    })
+                }}
+            />
           </Item>
           <Item regular style={styles.inputStyles}>
-            <Input placeholder="Phone Number" />
+            <Input
+                placeholder="Phone Number"
+                onChangeText={text => {
+                    this.setState({
+                        phoneNumber: text
+                    })
+                }}
+            />
           </Item>
           <ListItem>
             <CheckBox checked={true} />
@@ -44,17 +82,34 @@ class AddProduct extends Component {
             </Body>
           </ListItem>
           <Item regular style={styles.inputStyles}>
-            <Input placeholder="LineID" />
+            <Input
+                placeholder="LineID"
+                onChangeText={text => {
+                    this.setState({
+                        lineId: text
+                    })
+                }}
+            />
           </Item>
           <Form style={styles.inputStyles}>
-            <Textarea rowSpan={5} bordered placeholder="Address" />
+            <Textarea
+                rowSpan={5} bordered
+                placeholder="Address"
+                onChangeText={text => {
+                    this.setState({
+                        address: text
+                    })
+                }}
+            />
           </Form>
           <View style={styles.buttonStyles}>
             <Button iconLeft danger onPress={() => this.backToHome()}>
               <Icon name="trash" />
               <Text>Cancel</Text>
             </Button>
-            <Button iconLeft primary>
+            <Button iconLeft primary
+                onPress={() => this._handleSubmit()}
+            >
               <Icon name="checkmark" />
               <Text>Save</Text>
             </Button>
@@ -80,4 +135,15 @@ const styles = {
   }
 };
 
-export default AddProduct;
+const mapStateToProps = state => ({
+    addCustomer: state.customers
+});
+
+const mapDispatchToProps = dispatch => ({
+    addCustomer: bindActionCreators(addCustomer, dispatch)
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(AddCustomer);

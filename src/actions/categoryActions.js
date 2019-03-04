@@ -20,14 +20,12 @@ export const getCategories = () => async (dispatch) => {
         });
 
         return response;
-    } catch{
-        if(error.response) {
-            console.log('error', error.response);
-        }
+    } catch (error) {
+        console.log(error);
 
         dispatch({
             type: GET_CATEGORY_FAILURE,
-            payload:error.response.data.error
+            payload:error.message
         });
 
         return error.response;

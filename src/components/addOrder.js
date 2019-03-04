@@ -24,7 +24,7 @@ class AddOrder extends Component {
       product: 'Senka Perfect Whip'
     };
   }
-  onValueChange(value: string) {
+  onValueChange(value) {
     this.setState({
       selected: value
     });
