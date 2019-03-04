@@ -2,10 +2,9 @@ import _ from "lodash";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { getCategories, addProduct } from "../actions";
+import { getCategories, addProduct, getProductById } from "../actions";
 import {
   Container,
-  Header,
   Content,
   Input,
   Item,
@@ -14,8 +13,6 @@ import {
   Button,
   Icon,
   Text,
-  Grid,
-  Row,
   View,
   Picker,
   Label
@@ -42,7 +39,9 @@ class AddProduct extends Component {
   }
 
   async componentDidMount() {
+    const productId = this.props.navigation.getParam('productId');
     await this.props.getAllCategories();
+    this.props.getProductById(productId);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -98,14 +97,14 @@ class AddProduct extends Component {
   }
 
   async handleSubmitProduct(){
-    const productData = this.state;
-    delete productData.categories;
+    // const productData = this.state;
+    // delete productData.categories;
 
-    const result = await this.props.addProduct(productData);
+    // const result = await this.props.addProduct(productData);
 
-    if(result.status === 200){
+    // if(result.status === 200){
       this.props.navigation.navigate('Home');
-    }
+    // }
   }
 
   render() {
@@ -267,12 +266,15 @@ const styles = {
 };
 
 const mapStateToProps = state => ({
-  categories: state.categories.categories.values
+  categories: state.categories.categories.values,
+  productDetail: state.products.productDetail,
 });
 
 const mapDispatchToProps = dispatch => ({
   getAllCategories: bindActionCreators(getCategories, dispatch),
   addProduct: bindActionCreators(addProduct, dispatch),
+  getProductById: bindActionCreators(getProductById, dispatch)
+
 });
 
 export default connect(

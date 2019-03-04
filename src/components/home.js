@@ -10,8 +10,8 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import DetailProduct from "./detailProduct";
+import { getAllProducts, getProductByName } from "../actions";
 import Loading from './loading';
-import { getAllProducts } from "../actions/productActions";
 
 const { height } = Dimensions.get("window");
 
@@ -23,9 +23,15 @@ class Home extends Component {
       screenHeight: 0,
       showModal: false,
       products: [],
+      productDetail: {},
       refreshing: false,
       loading: true
     };
+
+    this.willFocus = this.props.navigation.addListener("willFocus", payload => {
+      this.props.getAllProducts();
+      // console.log('will focus', payload);
+    });
   }
 
   componentDidMount() {
@@ -41,20 +47,33 @@ class Home extends Component {
     });
   }
 
-  handleOpenModal() {
+  componentWillUnmount() {
+    this.willFocus.remove();
+  }
+
+  handleOpenModal(value) {
     this.setState({
-      showModal: true
+      showModal: true,
+      productDetail: value,
     });
   }
 
-  async goToEdit() {
+  async goToEdit(productId) {
     await this.setState({
       showModal: false
     });
 
     this.props.navigation.navigate("DetailProduct", {
-      productId: 1 //TODO: change with real id from props
+      productId: productId //TODO: change with real id from props
     });
+  }
+
+  handleSearch(value) {
+    if(value === ''){
+      this.props.getAllProducts()
+    } else {
+      this.props.getProductByName(value);
+    }
   }
 
   // - onRefresh
@@ -69,7 +88,7 @@ class Home extends Component {
   render() {
     const scrollEnabled = this.state.screenHeight > height;
 
-    return (
+    return(
       <View>
         <Item
           rounded
@@ -80,9 +99,8 @@ class Home extends Component {
             marginRight: 10
           }}
         >
-          <Input placeholder="Search" />
+          <Input placeholder="Search" onSubmitEditing={(event) => {this.handleSearch(event.nativeEvent.text)}}/>
         </Item>
-
           {
             this.state.loading ? <Loading />
             :
@@ -103,7 +121,7 @@ class Home extends Component {
                             <CardItem
                             cardBody
                             button
-                            onPress={() => this.handleOpenModal()}
+                            onPress={() => this.handleOpenModal(value)}
                             >
                             <Image
                                 source={{
@@ -128,7 +146,8 @@ class Home extends Component {
                 </ScrollView>
                 <DetailProduct
                 showModal={this.state.showModal}
-                goToEdit={() => this.goToEdit()}
+                goToEdit={(productId) => this.goToEdit(productId)}
+                productData={this.state.productDetail}
                 />
             </View>
         }
@@ -155,7 +174,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getAllProducts: bindActionCreators(getAllProducts, dispatch)
+  getAllProducts: bindActionCreators(getAllProducts, dispatch),
+  getProductByName: bindActionCreators(getProductByName, dispatch),
 });
 
 export default connect(

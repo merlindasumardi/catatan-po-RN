@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Modal } from "react-native";
+import { Modal } from "react-native";
 import {
   Content,
   Button,
@@ -9,7 +9,8 @@ import {
   Text,
   Card,
   CardItem,
-  Body
+  Body,
+  Left,
 } from "native-base";
 
 class DetailProduct extends Component {
@@ -20,6 +21,7 @@ class DetailProduct extends Component {
       showModal: props.showModal
     };
   }
+
   componentWillReceiveProps(nextProps) {
     this.setState({
       showModal: nextProps.showModal
@@ -32,11 +34,12 @@ class DetailProduct extends Component {
     });
   }
 
-  editDetail() {
-      this.props.goToEdit();
+  editDetail(productId) {
+    this.props.goToEdit(productId);
   }
 
   render() {
+    const productDetail = this.props.productData;
     return (
       <Modal visible={this.state.showModal}>
         <Content padder>
@@ -46,41 +49,71 @@ class DetailProduct extends Component {
               <Thumbnail
                 large
                 source={{
-                  uri:
-                    "https://facebook.github.io/react-native/docs/assets/favicon.png"
+                  uri: productDetail.image
                 }}
               />
             </CardItem>
             <CardItem>
-              <Body>
-                <Text>Product Name:</Text><Text>Tes 123</Text>
-                <Text>Price(Yen): 1000 yen</Text>
-                <Text>Price (Rp): Rp 128.000</Text>
-                <Text>Jastip (Rp): Rp 20.000</Text>
-                <Text>Untung (Rp): Rp. 20.000</Text>
-                <Text>Harga Jual (Rp): Rp. 150.0000</Text>
-                <Text>
-                  Beli Dimana: Drugstore osaka
-                  blabadfadfsafdasfasfdasfsafdasdfsafasfsafasddfnsafnkasnfdsafdnksafaskfkafnafnakfnakf
-                </Text>
-                <Text>
-                  Notes: afhadkfhakfhasdkfhaskfhaskfhakncknaklshdfjs
-                  fhsahdfkanfjkaf askdfjsakfnas ckasfijaf a adhfadfksanf
-                  afdkajhdfa
-                </Text>
-                <Button iconLeft transparent primary>
-                  <Text>Customers:</Text>
-                  <Icon name="person" />
-                  <Text>10</Text>
-                </Button>
-              </Body>
+              <Text style={styles.subtitle}>Product Name:</Text>
+              <Left>
+                <Text>{productDetail.productName}</Text>
+              </Left>
+            </CardItem>
+            <CardItem>
+              <Text style={styles.subtitle}>Price(Yen):</Text>
+              <Left>
+                <Text>{productDetail.originalPrice} yen</Text>
+              </Left>
+            </CardItem>
+            <CardItem>
+              <Text style={styles.subtitle}>Price (Rp):</Text>
+              <Left>
+                <Text>Rp {productDetail.priceAfterConversion}</Text>
+              </Left>
+            </CardItem>
+            <CardItem>
+              <Text style={styles.subtitle}>Jastip (Rp):</Text>
+              <Left>
+                <Text>Rp {productDetail.preOrderFee}</Text>
+              </Left>
+            </CardItem>
+            <CardItem>
+              <Text style={styles.subtitle}>Untung (Rp):</Text>
+              <Left>
+                <Text>Rp. {productDetail.profit}</Text>
+              </Left>
+            </CardItem>
+            <CardItem>
+              <Text style={styles.subtitle}>Harga Jual (Rp):</Text>
+              <Left>
+                <Text>Rp. {productDetail.sellingPrice}</Text>
+              </Left>
+            </CardItem>
+            <CardItem>
+              <Text style={styles.subtitle}>Beli Dimana:</Text>
+              <Left>
+                <Text>{productDetail.whereToBuy}</Text>
+              </Left>
+            </CardItem>
+            <CardItem>
+              <Text style={styles.subtitle}>Notes:</Text>
+              <Left>
+                <Text>{productDetail.notes}</Text>
+              </Left>
+            </CardItem>
+            <CardItem>
+              <Button iconLeft transparent primary>
+                <Text>Customers:</Text>
+                <Icon name="person" />
+                <Text>10</Text>
+              </Button>
             </CardItem>
             <CardItem footer>
               <Button danger iconLeft onPress={() => this.closeModal()}>
                 <Icon name="close" />
                 <Text>Close</Text>
               </Button>
-              <Button primary iconLeft onPress={() => this.editDetail()}>
+              <Button primary iconLeft onPress={() => this.editDetail(productDetail.id)}>
                 <Icon name="create" />
                 <Text>Edit</Text>
               </Button>
@@ -89,6 +122,12 @@ class DetailProduct extends Component {
         </Content>
       </Modal>
     );
+  }
+}
+
+const styles = {
+  subtitle: {
+    fontWeight: 'bold',
   }
 }
 
