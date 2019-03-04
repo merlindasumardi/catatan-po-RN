@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import DetailProduct from "./detailProduct";
-import { getAllProducts } from "../actions/productActions";
+import { getAllProducts, getProductByName } from "../actions";
 
 const { height } = Dimensions.get("window");
 
@@ -17,8 +17,14 @@ class Home extends Component {
     this.state = {
       screenHeight: 0,
       showModal: false,
-      products: []
+      products: [],
+      productDetail: {},
     };
+
+    this.willFocus = this.props.navigation.addListener("willFocus", payload => {
+      this.props.getAllProducts();
+      // console.log('will focus', payload);
+    });
   }
 
   componentDidMount() {
@@ -31,20 +37,33 @@ class Home extends Component {
     });
   }
 
-  handleOpenModal() {
+  componentWillUnmount() {
+    this.willFocus.remove();
+  }
+
+  handleOpenModal(value) {
     this.setState({
-      showModal: true
+      showModal: true,
+      productDetail: value,
     });
   }
 
-  async goToEdit() {
+  async goToEdit(productId) {
     await this.setState({
       showModal: false
     });
 
     this.props.navigation.navigate("DetailProduct", {
-      productId: 1 //TODO: change with real id from props
+      productId: productId //TODO: change with real id from props
     });
+  }
+
+  handleSearch(value) {
+    if(value === ''){
+      this.props.getAllProducts()
+    } else {
+      this.props.getProductByName(value);
+    }
   }
 
   render() {
@@ -61,34 +80,34 @@ class Home extends Component {
             marginRight: 10
           }}
         >
-          <Input placeholder="Search" />
+          <Input placeholder="Search" onSubmitEditing={(event) => {this.handleSearch(event.nativeEvent.text)}}/>
         </Item>
 
         <ScrollView>
           <View style={styles.container}>
-            {_.map(this.props.products, (value, i) => {
+            {_.map(this.props.products, (data, i) => {
               return (
                 <View style={styles.containerItem} key={i}>
                   <Card>
                     <CardItem
                       cardBody
                       button
-                      onPress={() => this.handleOpenModal()}
+                      onPress={() => this.handleOpenModal(data)}
                     >
                       <Image
                         source={{
-                          uri: value.image
+                          uri: data.image
                         }}
                         style={{ height: 200, width: null, flex: 1 }}
                       />
                     </CardItem>
                     <CardItem footer>
-                    <Left>
-                      <Text>{value.productName}</Text>
-                    </Left>
-                    <Right>
-                    <Text>{value.sellingPrice}</Text>
-                    </Right>
+                      <Left>
+                        <Text>{data.productName}</Text>
+                      </Left>
+                      <Right>
+                        <Text>{data.sellingPrice}</Text>
+                      </Right>
                     </CardItem>
                   </Card>
                 </View>
@@ -98,7 +117,8 @@ class Home extends Component {
         </ScrollView>
         <DetailProduct
           showModal={this.state.showModal}
-          goToEdit={() => this.goToEdit()}
+          goToEdit={(productId) => this.goToEdit(productId)}
+          productData={this.state.productDetail}
         />
       </View>
     );
@@ -123,7 +143,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getAllProducts: bindActionCreators(getAllProducts, dispatch)
+  getAllProducts: bindActionCreators(getAllProducts, dispatch),
+  getProductByName: bindActionCreators(getProductByName, dispatch),
 });
 
 export default connect(
