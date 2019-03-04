@@ -1,12 +1,17 @@
 import _ from "lodash";
 import React, { Component } from "react";
-import { Image, View, Dimensions, ScrollView, Text } from "react-native";
+import {
+    Image, View, Dimensions,
+    ScrollView, Text,
+    RefreshControl
+} from "react-native";
 import { Card, CardItem, Item, Input, Left, Right } from "native-base";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import DetailProduct from "./detailProduct";
 import { getAllProducts, getProductByName } from "../actions";
+import Loading from './loading';
 
 const { height } = Dimensions.get("window");
 
@@ -19,6 +24,8 @@ class Home extends Component {
       showModal: false,
       products: [],
       productDetail: {},
+      refreshing: false,
+      loading: true
     };
 
     this.willFocus = this.props.navigation.addListener("willFocus", payload => {
@@ -28,7 +35,10 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    this.props.getAllProducts();
+    this.props.getAllProducts()
+        .then(() => {
+            this.setState({ loading: false });
+        });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -66,10 +76,19 @@ class Home extends Component {
     }
   }
 
+  // - onRefresh
+  _onRefresh = () => {
+      this.setState({ refreshing: true });
+      this.props.getAllProducts()
+        .then(() => {
+            this.setState({ refreshing: false });
+        });
+  }
+
   render() {
     const scrollEnabled = this.state.screenHeight > height;
 
-    return (
+    return(
       <View>
         <Item
           rounded
@@ -82,44 +101,56 @@ class Home extends Component {
         >
           <Input placeholder="Search" onSubmitEditing={(event) => {this.handleSearch(event.nativeEvent.text)}}/>
         </Item>
-
-        <ScrollView>
-          <View style={styles.container}>
-            {_.map(this.props.products, (data, i) => {
-              return (
-                <View style={styles.containerItem} key={i}>
-                  <Card>
-                    <CardItem
-                      cardBody
-                      button
-                      onPress={() => this.handleOpenModal(data)}
-                    >
-                      <Image
-                        source={{
-                          uri: data.image
-                        }}
-                        style={{ height: 200, width: null, flex: 1 }}
-                      />
-                    </CardItem>
-                    <CardItem footer>
-                      <Left>
-                        <Text>{data.productName}</Text>
-                      </Left>
-                      <Right>
-                        <Text>{data.sellingPrice}</Text>
-                      </Right>
-                    </CardItem>
-                  </Card>
+          {
+            this.state.loading ? <Loading />
+            :
+            <View>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                        />
+                    }
+                >
+                <View style={styles.container}>
+                    {_.map(this.props.products, (value, i) => {
+                    return (
+                        <View style={styles.containerItem} key={i}>
+                        <Card>
+                            <CardItem
+                            cardBody
+                            button
+                            onPress={() => this.handleOpenModal(value)}
+                            >
+                            <Image
+                                source={{
+                                uri: value.image
+                                }}
+                                style={{ height: 200, width: null, flex: 1 }}
+                            />
+                            </CardItem>
+                            <CardItem footer>
+                            <Left>
+                            <Text>{value.productName}</Text>
+                            </Left>
+                            <Right>
+                            <Text>{value.sellingPrice}</Text>
+                            </Right>
+                            </CardItem>
+                        </Card>
+                        </View>
+                    );
+                    })}
                 </View>
-              );
-            })}
-          </View>
-        </ScrollView>
-        <DetailProduct
-          showModal={this.state.showModal}
-          goToEdit={(productId) => this.goToEdit(productId)}
-          productData={this.state.productDetail}
-        />
+                </ScrollView>
+                <DetailProduct
+                showModal={this.state.showModal}
+                goToEdit={(productId) => this.goToEdit(productId)}
+                productData={this.state.productDetail}
+                />
+            </View>
+        }
       </View>
     );
   }

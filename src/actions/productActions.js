@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+    URL,
     GET_PRODUCT_REQUEST,
     GET_PRODUCT_SUCCESS,
     GET_PRODUCT_FAILURE,
@@ -20,7 +21,7 @@ export const getAllProducts = () => async (dispatch) => {
     });
     
     try{
-        const response = await axios.get('https://catatan-po.herokuapp.com/products');
+        const response = await axios.get(`${URL}/products`);
 
         dispatch({
             type: GET_PRODUCT_SUCCESS,
@@ -49,7 +50,7 @@ export const addProduct = (data = {}) => async (dispatch) => {
     });
 
     try{
-        const response = await axios.post('https://catatan-po.herokuapp.com/products', data);
+        const response = await axios.post(`${URL}/products`, data);
 
         dispatch({
             type: ADD_PRODUCT_SUCCESS,
