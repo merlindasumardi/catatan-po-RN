@@ -4,7 +4,7 @@ const initialState = {
   isFetchingProductFailed: false,
   isAddingProduct: false,
   isAddProductSuccess: false,
-  isAddProductFailur: false,
+  isAddProductFailed: false,
 };
 
 export default (ProductReducer = (state = initialState, action) => {
