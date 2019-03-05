@@ -16,12 +16,19 @@ import {
 // - reducer
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getAllCustomers } from '../actions/customerActions';
+import {
+    getAllCustomers, removeCustomer
+} from '../actions/customerActions';
 import _ from 'lodash';
+import { RefreshControl } from 'react-native';
 
 class Customers extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            refreshing: false
+        }
     }
 
     componentDidMount() {
@@ -41,9 +48,34 @@ class Customers extends Component {
     });  
    }
 
+   // - delete customer
+   async _removeCustomer(value) {
+        const result = await this.props.removeCustomer(value);
+        if (_.isEqual(result.status, 200)) {
+            this._onRefresh();
+        }
+   }
+
+   // - onRefresh
+    _onRefresh = () => {
+        this.setState({ refreshing: true });
+        // - refetch customer data
+        this.props.getAllCustomers()
+            .then(() => {
+                this.setState({ refreshing: false });
+            });
+    }
+
   render() {
     return (
-      <Content>
+      <Content
+        refreshControl={
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh}
+            />
+        }
+      >
         <Item
           rounded
           style={{
@@ -82,7 +114,7 @@ class Customers extends Component {
                             <Button warning onPress={() => this.goToEdit(value)}>
                             <Icon active name="create" />
                             </Button>
-                            <Button danger onPress={() => alert("Trash")}>
+                            <Button danger onPress={() => this._removeCustomer(value)}>
                             <Icon active name="trash" />
                             </Button>
                             </>
@@ -102,7 +134,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getAllCustomers: bindActionCreators(getAllCustomers, dispatch)
+    getAllCustomers: bindActionCreators(getAllCustomers, dispatch),
+    removeCustomer: bindActionCreators(removeCustomer, dispatch)
 });
 
 export default connect(

@@ -41,8 +41,9 @@ class AddCustomer extends Component {
     async _handleSubmit() {
         const customerData = this.state;
         const result = await this.props.addCustomer(customerData);
+        console.log(result);
         if (_.isEqual(result.status, 200)) {
-            this.props.navigation.navigate('Customer');
+            this.props.navigation.navigate('Customers');
         }
     }
   render() {
@@ -69,7 +70,7 @@ class AddCustomer extends Component {
                 }}
             />
           </Item>
-          <ListItem>
+          {/* <ListItem>
             <CheckBox checked={true} />
             <Body>
               <Text>Whatsapp</Text>
@@ -80,7 +81,7 @@ class AddCustomer extends Component {
             <Body>
               <Text>Line</Text>
             </Body>
-          </ListItem>
+          </ListItem> */}
           <Item regular style={styles.inputStyles}>
             <Input
                 placeholder="LineID"

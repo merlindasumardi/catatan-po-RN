@@ -4,7 +4,10 @@ import {
     GET_CUSTOMER_FAILURE,
     ADD_CUSTOMER_REQUEST,
     ADD_CUSTOMER_SUCCESS,
-    ADD_CUSTOMER_FAILURE
+    ADD_CUSTOMER_FAILURE,
+    REMOVE_CUSTOMER_REQUEST,
+    REMOVE_CUSTOMER_SUCCESS,
+    REMOVE_CUSTOMER_FAILURE
 } from '../actions/actionTypes';
 
 const initialState = {
@@ -53,6 +56,21 @@ export default (CustomerReducer = (state = initialState, action) => {
         return {
             ...state,
             addCustomer: action.payload
+        }
+
+    case REMOVE_CUSTOMER_REQUEST:
+        return {
+            ...state
+        }
+    
+    case REMOVE_CUSTOMER_SUCCESS:
+        return {
+            ...state
+        }
+
+    case REMOVE_CUSTOMER_FAILURE:
+        return {
+            ...state
         }
     
     default:
